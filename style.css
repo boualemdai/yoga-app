@@ -1,0 +1,75 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100&display=swap");
+* {
+  font-family: "Poppins", sans-serif;
+}
+body {
+  min-height: 100vh;
+  background-image: url(./img/Salar-de-Uyuni-Bolivia-Dry-salt-flats-Travelwithmk.com_.jpg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+ul {
+  appearance: none;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 0;
+}
+li {
+  position: relative;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px grey;
+  margin: 20px;
+  width: 200px;
+  height: 250px;
+  padding: 20px;
+}
+img {
+  width: 80%;
+}
+.card-footer {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+input[type="number"] {
+  background: none;
+  text-align: end;
+  border: none;
+  width: 40px;
+  font-size: 2rem;
+}
+input[type="number"]:focus {
+  border: none;
+  outline: none;
+}
+span {
+  font-size: 2rem;
+}
+.arrow,
+.deletBtn {
+  width: 45%;
+  text-align: center;
+  font-size: 1.5rem;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 5px;
+  box-sizing: border-box;
+  padding: 5px;
+  cursor: pointer;
+}
+#start {
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
