@@ -1,5 +1,5 @@
 const main = document.querySelector("main");
-let exerciceArray = [
+const basicArray = [
   { pic: 0, min: 1 },
   { pic: 1, min: 1 },
   { pic: 2, min: 1 },
@@ -12,7 +12,62 @@ let exerciceArray = [
   { pic: 9, min: 1 },
 ];
 
-class Exercice {}
+let exerciceArray = [];
+
+//------store exerciceArray
+
+(() => {
+  if (localStorage.exercices) {
+    exerciceArray = JSON.parse(localStorage.exercices);
+  } else {
+    exerciceArray = basicArray;
+  }
+})();
+
+class Exercice {
+  constructor() {
+    this.index = 0;
+    this.minutes = exerciceArray[this.index].min;
+    this.seconds = 0;
+  }
+  updateCountdown() {
+    this.seconds = this.seconds < 10 ? "0" + this.seconds : this.seconds;
+
+    setTimeout(() => {
+      if (this.minutes === 0 && this.seconds === "00") {
+        this.index++;
+        this.ring();
+        if (this.index < exerciceArray.length) {
+          this.minutes = exerciceArray[this.index].min;
+          this.seconds = 0;
+          this.updateCountdown();
+        } else {
+          return page.finish();
+        }
+      } else if (this.seconds === "00") {
+        this.minutes--;
+        this.seconds = 59;
+        this.updateCountdown();
+      } else {
+        this.seconds--;
+        this.updateCountdown();
+      }
+    }, 1000);
+
+    return (main.innerHTML = `
+<div class="exo-container">
+<p>${this.minutes}:${this.seconds}</p>
+<img src=./img/${exerciceArray[this.index].pic}.png>
+<div class="bas">${this.index + 1}/${exerciceArray.length}</div>
+</div>
+`);
+  }
+  ring() {
+    const audio = new Audio();
+    audio.src = "./ring.mp3";
+    audio.play();
+  }
+}
 
 const utils = {
   pageContent: function (title, content, btn) {
@@ -26,7 +81,7 @@ const utils = {
         exerciceArray.map((exo) => {
           if (exo.pic == e.target.id) {
             exo.min = parseInt(e.target.value);
-            console.log(exerciceArray);
+            this.store();
           }
         });
       });
@@ -43,12 +98,36 @@ const utils = {
               exerciceArray[position],
             ];
             page.lobby();
+            this.store();
           } else {
             position++;
           }
         });
       });
     });
+  },
+  deleteItems: function () {
+    document.querySelectorAll(".deleteBtn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        let newArray = [];
+        exerciceArray.map((exo) => {
+          if (exo.pic != e.target.dataset.pic) {
+            newArray.push(exo);
+          }
+        });
+        exerciceArray = newArray;
+        page.lobby();
+        this.store();
+      });
+    });
+  },
+  reboot: function () {
+    exerciceArray = basicArray;
+    page.lobby();
+    this.store();
+  },
+  store: function () {
+    localStorage.exercices = JSON.stringify(exerciceArray);
   },
 };
 
@@ -66,7 +145,7 @@ const page = {
       <img src="./img/${exo.pic}.png" alt="photo" >
       <div class="card-footer">
       <i class="fas fa-arrow-left arrow" data-pic="${exo.pic}"></i>
-      <i class="fas fa-times-circle deletBtn" data-pic=${exo.pic}></i>
+      <i class="fas fa-times-circle deleteBtn" data-pic=${exo.pic}></i>
       </div>
       </li>
       `;
@@ -79,9 +158,13 @@ const page = {
     );
     utils.handleEventMinutes();
     utils.handleEventArrow();
+    utils.deleteItems();
+    reboot.addEventListener("click", () => utils.reboot());
+    start.addEventListener("click", () => this.routine());
   },
   routine: function () {
-    utils.pageContent("Routine", "Exercice", null);
+    const exercice = new Exercice();
+    utils.pageContent("Routine", exercice.updateCountdown(), null);
   },
   finish: function () {
     utils.pageContent(
@@ -89,6 +172,8 @@ const page = {
       "<button id='start'>Recomencer</button>",
       "<button id='reboot' class ='btn-reboot'>Réinitialiser<i class='far fa-times-circle'></i></button>"
     );
+    start.addEventListener("click", () => this.routine());
+    reboot.addEventListener("click", () => utils.reboot());
   },
 };
 page.lobby();
